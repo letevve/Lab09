@@ -6,10 +6,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
+import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.alg.DijkstraShortestPath;
 
 import it.polito.tdp.metrodeparis.dao.MetroDAO;
 
@@ -17,7 +20,7 @@ public class Model {
 	
 	MetroDAO md = new MetroDAO();
 	private List<Fermata> fermate;
-	private UndirectedGraph<Fermata, DefaultWeightedEdge> graph;
+	private WeightedGraph<Fermata, DefaultWeightedEdge> graph; //= new SimpleWeightedGraph<Fermata, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 
 	public List<Fermata> getFermate() {
 		if(this.fermate == null){
@@ -28,29 +31,40 @@ public class Model {
 	
 	public String createGraph() throws SQLException {
 		
-		graph = new SimpleWeightedGraph<Fermata, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		this.graph = new SimpleWeightedGraph<Fermata, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		
 		Graphs.addAllVertices(graph, this.getFermate());
 		
 		List<Tratta> tratte = new LinkedList<Tratta>(md.getAllTratte().values());
 		for(Tratta t : tratte){
-			graph.addEdge(t.getF1(), t.getF2());
+			DefaultWeightedEdge dwe = graph.addEdge(t.getF1(), t.getF2());
+			if(dwe!=null){
+				graph.setEdgeWeight(dwe, t.getTempo());
+				//System.out.println(dwe.toString() + " " + t.getTempo());
+			}
 		}
 		
 		return graph.toString();
 		
 	}
 
-	public String calcolaPercorso(Fermata value, Fermata value2) throws SQLException {
+	public String calcolaPercorso(Fermata partenza, Fermata arrivo) throws SQLException {
 		// TODO Auto-generated method stub
 		
 		//chiamare md.getMappaLinee()
 		
-		String graph = "";
-		graph = this.createGraph();
+		String grafo = "";
+		grafo = this.createGraph();
+		DijkstraShortestPath<Fermata, DefaultWeightedEdge> dsp = new DijkstraShortestPath<Fermata, DefaultWeightedEdge>(graph, partenza, arrivo);
+		double tempo = 0.0;
+		
+		
+		for(DefaultWeightedEdge t : dsp.getPathEdgeList()){
+			tempo += graph.getEdgeWeight(t) + 0.5;
+		}
+		
 		String res = "";
-		//res = md.
-		return graph;
+		return dsp.getPath().toString() + " il tempo totale è: "+tempo+" minuti";
 	}
 
 }

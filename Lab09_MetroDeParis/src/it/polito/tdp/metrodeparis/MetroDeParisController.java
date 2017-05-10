@@ -59,14 +59,3 @@ public class MetroDeParisController {
     
     
 }
-
-
-
-/*
-List<Country> raggiungibili = model.getRaggiungibili(partenza) ;
-
-txtResult.appendText(raggiungibili.toString()+"\n");
-
-boxDestinazione.getItems().clear(); 
-boxDestinazione.getItems().addAll(raggiungibili) ;
-*/
