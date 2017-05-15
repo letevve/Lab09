@@ -102,6 +102,14 @@ public class Tratta {
 		this.tempo = tempo;
 	}
 	
-	 
+	public FermataEnhanced getF1Enhanced(){
+		FermataEnhanced f1e = new FermataEnhanced(this.getF1().getIdFermata(), this.getF1().getNome(), this.getF1().getCoords(), this.getLinea().getId());
+		return f1e;
+	}
+	
+	public FermataEnhanced getF2Enhanced(){
+		FermataEnhanced f1e = new FermataEnhanced(this.getF2().getIdFermata(), this.getF2().getNome(), this.getF2().getCoords(), this.getLinea().getId());
+		return f1e;
+	}
 
 }

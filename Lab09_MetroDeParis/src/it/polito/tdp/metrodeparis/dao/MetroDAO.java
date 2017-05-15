@@ -12,6 +12,7 @@ import java.util.Map;
 import com.javadocmd.simplelatlng.LatLng;
 
 import it.polito.tdp.metrodeparis.model.Fermata;
+import it.polito.tdp.metrodeparis.model.FermataEnhanced;
 import it.polito.tdp.metrodeparis.model.Linea;
 import it.polito.tdp.metrodeparis.model.Tratta;
 
@@ -47,6 +48,34 @@ public class MetroDAO {
 
 		return fermate;
 	}
+	
+	public List<FermataEnhanced> getAllFermateEnhanced() {
+
+		final String sql = "SELECT id_fermata, nome, coordx, coordy, id_linea FROM fermata, connessione WHERE connessione.id_stazP=fermata.id_fermata ORDER BY nome ASC";
+		List<FermataEnhanced> fermateEn = new ArrayList<FermataEnhanced>();
+		
+
+		try {
+			Connection conn = DBConnect.getInstance().getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+				FermataEnhanced fe = new FermataEnhanced(rs.getInt("id_Fermata"), rs.getString("nome"), new LatLng(rs.getDouble("coordx"), rs.getDouble("coordy")), rs.getInt("id_linea"));
+				fermateEn.add(fe);
+				//mappaFermate.put(fe.getIdFermata(), fe);
+			}
+
+			st.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Errore di connessione al Database.");
+		}
+
+		return fermateEn;
+	} 
 	
 	public Map<Integer, Linea> getMappaLinee(){
 		final String sql = "SELECT * FROM linea ";
@@ -102,6 +131,8 @@ public class MetroDAO {
 		}
 
 		return tratte;
-		
 	}
+	
+	
+	
 }
